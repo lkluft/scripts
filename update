@@ -3,8 +3,4 @@ sudo apt-get -y update
 sudo apt-get -y dist-upgrade
 sudo apt-get autoclean
 sudo apt-get -y autoremove
-if [ ! -z $@ ]; then 
- if [ "$@" = "r" ]; then sudo reboot; fi
- if [ "$@" = "s" ]; then sudo shutdown -h now; fi
-fi
-exit
+exit 0
