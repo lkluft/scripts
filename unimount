@@ -1,0 +1,18 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 08.04.2014
+#
+# purpose: Mount a remote directory via ssh
+
+# enter username at host server
+USERNAME=u300509
+
+if [[ $1 = -u ]];then
+    # if parameter -u is given, unmount directory and delelte folder
+    fusermount -u $HOME/$USERNAME
+    rmdir $HOME/$USERNAME
+else
+    # create folder and mount remote directory
+    mkdir $HOME/$USERNAME
+    sshfs $USERNAME@login1.zmaw.de:/home/zmaw/$USERNAME $HOME/$USERNAME
+fi

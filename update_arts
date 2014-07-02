@@ -1,0 +1,44 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 03.06.2014
+#
+# purpose: update the sourcefiles and build the executable of ARTS
+
+# download the latest sourcefiles using subversion
+cd /home/zmaw/u300509/lkluft/arts/
+echo Aktuelles Verzeichnis ist $(pwd)
+echo Download der aktuellsten sourcefiles.
+svn update
+
+# get number of cores that are free to use (use halt of them)
+n=$(($(($(nproc)-$(cat /proc/loadavg | cut -d "." -f 1)))/2))
+
+if [ $n -le 0 ];then
+    n=1
+fi
+
+# build the executable
+cd build
+echo Aktuelles Verzeichnis ist $(pwd)
+echo Kompilieren der executable mit $n CPU-Cores.
+make -j$n arts
+
+# success message
+if [ $? = 0 ];then
+    echo ARTS Update erfolgreich durchgeführt.
+else
+    echo Fehler beim ARTS Update.
+fi
+
+# update vim syntax highlightin for arts (if script is existing)
+if [ $(which update_vim_arts_syntax) ];then
+    echo vim Syntax Highlighting wird aktualisiert.
+    update_vim_arts_syntax
+    
+    # succes message
+    if [ $? = 0 ];then
+        echo vim syntax file erfolgreich aktualisiert.
+    else
+        echo Fehler bei Aktualisierung des vim syntax files.
+    fi
+fi

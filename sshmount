@@ -1,0 +1,26 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 08.04.2014
+#
+# purpose: Mount a remote directory via intermediate machine
+
+# enter username at host server, server you want to
+# access trhough login1 and directory to mount
+USERNAME=u300509
+TARGETSERVER=thunder7
+DIR=''
+
+# open terminal and setup port-forwarding
+echo ssh-Tunnel nach $TARGETSERVER über login1 wird eingerichtet.
+lxterminal --command="ssh -L 2222:$TARGETSERVER:22 $USERNAME@login1.zmaw.de 'echo Connected.;cat -'"
+
+# create folder (if not existing)
+if [ ! -d ~/$USERNAME ];then mkdir ~/$USERNAME;fi
+
+# mount remote directory
+sshfs -o follow_symlinks -p 2222 u300509@127.0.0.1:$DIR ~/$USERNAME &> /dev/null
+while [ $? != 0 ];do
+    sleep 1
+    sshfs -o follow_symlinks -p 2222 u300509@127.0.0.1:$DIR ~/$USERNAME &> /dev/null
+done
+echo Verzeichnis $USERNAME wurde gemountet.

@@ -1,0 +1,41 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 14.05.2014
+#
+# purpose: Shutdown the system and autoupdate if
+# limit is reached
+limit=5
+
+# if .shut_count does not exist create it
+if [ ! -f ~/.shut_count ];then
+    echo shut_count=1 > ~/.shut_count
+fi
+
+# return current shutcount if -c/--count parameter is given
+if ([ ! -z $1 ] && ([ $1 = -c ] || [ $1 = --count ]));then
+    grep shut_count ~/.shut_count
+    exit
+fi
+
+# shutdown immediately without update if -n/--now parameter is given
+if ([ ! -z $1 ] && ([ $1 = -n ] || [ $1 = --now ]));then
+    sudo shutdown -h now
+    exit
+fi
+
+# get current shutdown and update if limit
+# is reached or -u/--update paramter is given
+n=$(grep "shut_count" ~/.shut_count | cut -d "=" -f 2)
+if [ $n = $limit ] || ([ ! -z $1 ] && ([ $1 = -u ] || [ $1 = --update ]));then
+    sudo apt-get -y update
+    sudo apt-get -y dist-upgrade
+    sudo apt-get -y autoremove
+    sudo apt-get autoclean
+    n=0
+fi
+
+# add 1 to shutcount abd shut down
+sed -i /shut_count/s/[0-9]/$(($n + 1))/g ~/.shut_count
+
+
+sudo shutdown -h now

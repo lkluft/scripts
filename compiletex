@@ -1,0 +1,25 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 04.05.2014
+#
+# purpose: Skript zum Kompilieren und anschliessenden Betrachten
+# von tex Dokumenten 
+
+# Einlesen des Filenames ohne Dateiendung
+filename=$1
+name="${filename%.*}"
+
+# Kompilieren
+pdflatex -interaction=errorstopmode $name.tex
+
+# Wenn das Kompilieren erfolgreich war, erneut kompilieren und die erzeugte pdf in Evince betrachten
+if [[ $? == 0 ]];then
+    bibtex $name.aux &> /dev/null
+    pdflatex -interaction=nonstopmode $name.tex &> /dev/null
+    pdflatex -interaction=nonstopmode $name.tex &> /dev/null
+    evince $name.pdf &> /dev/null &
+    
+    # Aufraumen nach dem Kompilieren
+    echo "aux, log und toc sowie bbl und blg Dateien wurden entfernt."
+    rm $name.{aux,log,toc,bbl,blg} &> /dev/null
+fi

@@ -1,0 +1,220 @@
+#!/bin/bash
+# Skript zum automatischen Herunterladen der wichtigsten
+# synoptischen Karten
+#
+if [ ! -z $1 ] && [ $1 = 'archiv' ]; then
+# Jahresabfrage
+echo -e "Jahr  (yyyy) = "\\c
+read jahr
+if [ "$jahr" -gt "`date +%Y`" ];then
+echo Der Zeitpunkt liegt zu weit in der Zukunft.
+read jahr
+ if [ "$jahr" -gt "`date +%Y`" ];then
+ jahr=`date +%Y`
+ echo Jahr wurde auf `date +%Y` gesetzt.
+ fi
+fi
+if [ "$jahr" -lt "1979" ];then
+echo Der Zeitpunkt liegt zu weit in der Vergangenheit.
+read jahr
+ if [ "$jahr" -lt "1979" ];then
+ jahr=1979
+ echo Jahr wurde auf 1979 gesetzt.
+ fi
+fi
+# Monatsabfrage
+echo -e "Monat   (mm) =   "\\c
+read monat
+if [ "$monat" -gt "12" ];then
+echo Ungültige Eingabe
+read monat
+if [ "$monat" -gt "12" ];then
+monat=12
+echo Monat auf Dezember gesetzt.
+fi
+fi
+# Tagesabfrage
+echo -e "Tag     (dd) =   "\\c
+read tag
+case $monat in
+ 01|03|05|07|08|10|12)
+ 
+ if [ "$tag" -gt "31" ];then
+ echo Ungültige Eingabe
+ read tag
+  if [ "$tag" -gt "31" ];then
+  tag=31
+  echo Tag auf 31 gesetzt.
+  fi
+ fi ;;
+ 
+ 04|06|09|11)
+ 
+ if [ "$tag" -gt "30" ];then
+ echo Ungültige Eingabe
+ read tag
+  if [ "$tag" -gt "30" ];then
+  tag=31
+  echo Tag auf 30 gesetzt.
+  fi
+ fi ;;
+ 
+ 02) 
+ if [ "$(($jahr % 4))" -eq "0" ];then
+  if [ "$tag" -gt "29" ];then
+  echo Ungültige Eingabe
+  read tag
+   if [ "$tag" -gt "29" ];then
+   tag=29
+   echo Tag auf 29 gesetzt.
+   fi
+  fi
+ else
+  if [ "$tag" -gt "28" ];then
+  echo Ungültige Eingabe
+  read tag
+   if [ "$tag" -gt "28" ];then
+   tag=28
+   echo Tag auf 28 gesetzt.
+   fi
+  fi
+ fi ;;
+esac
+# Zusammensetzen des Datums
+datum=$jahr-$monat-$tag
+
+else
+
+datum=`date +%F`
+jahr=`date +%Y`
+monat=`date +%m`
+tag=`date +%d`
+
+fi
+
+echo Wetterdaten für den $tag.$monat.$jahr
+
+#
+# Anlegen eines Ordners fuer synoptische Karten in der home directory
+if [ ! -d ~/Synoptik ]; then mkdir ~/Synoptik; fi
+if [ ! -d ~/Synoptik/"$datum"/ ]; then mkdir ~/Synoptik/"$datum"/; fi
+#
+# Laden der synoptischen Uebersicht (nicht im Archiv-Modus)
+if [ -z $1 ];then
+wget -qO temp http://www.wetterzentrale.de/dwdsyn1.html
+awk 'NR >= 20' temp > temp2
+sed '/<br>/,$d' temp2 | cut -d "<" -f 1 > ~/Synoptik/"$datum"/Synoptische-Übersicht-"$datum"
+rm temp temp2
+gedit ~/Synoptik/"$datum"/Synoptische-Übersicht-"$datum" &
+fi
+#
+# Herunterladen der Bodenanalyse (12 Uhr falls vorhanden, sonst 0 Uhr)
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/DWD/"$(expr $jahr - 2000 )""$monat""$tag"12_DWD_Analyse.gif -o ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-12-Uhr.gif
+
+if [ `stat -c %s ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-12-Uhr.gif` = 14 ]; then
+echo 12-Uhr-Analyse noch nicht da. Downloade 0-Uhr-Bodenanalyse.
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/DWD/"$(expr $jahr - 2000 )""$monat""$tag"00_DWD_Analyse.gif -o ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-00-Uhr.gif
+rm ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-12-Uhr.gif
+fi
+# Uberprueft im Archiv-Modus, ob die Bodenanalysekarte vorliegt.
+if [ ! -z $1 ] && [ $1 = 'archiv' ] && [ `stat -c %s ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-*-Uhr.gif` = 14 ]; then
+rm ~/Synoptik/"$datum"/01_Bodenanalyse-"$datum"-*-Uhr.gif
+echo Bodenanalysekarte vom $tag.$monat.$jahr nicht vorhanden.
+fi
+# Synoptische Standardkarten
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_1.gif -o ~/Synoptik/"$datum"/02_500-hPa-Bodendruck-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS_Global/"$jahr""$monat""$tag"12_1_nh.gif -o ~/Synoptik/"$datum"/03_500-hPa-Geopotential-Zirkumpolar-"$datum".gif
+# Uberprueft im Archiv-Modus, ob die Zirkumpolarkarte vorliegt.
+if [ ! -z $1 ] && [ $1 = 'archiv' ] && [ `stat -c %s ~/Synoptik/"$datum"/03_500-hPa-Geopotential-Zirkumpolar-"$datum".gif` = 14 ]; then
+rm ~/Synoptik/"$datum"/03_500-hPa-Geopotential-Zirkumpolar-"$datum".gif
+echo Zirkumpolarkarte vom $tag.$monat.$jahr nicht vorhanden.
+fi
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_25.gif -o ~/Synoptik/"$datum"/04_850-hPa-Temperatur-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_5.gif -o ~/Synoptik/"$datum"/05_850-hPa-pseudopot.-Temperatur-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_4.gif -o ~/Synoptik/"$datum"/06_Niederschlagssumme-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_38.gif -o ~/Synoptik/"$datum"/07_300-hPa-Jet-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_9.gif -o ~/Synoptik/"$datum"/08_500-hPa-Schichtdickenadvektion-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_7.gif -o ~/Synoptik/"$datum"/09_500-hPa-Vorticityadvektion-"$datum".gif
+#
+curl --connect-timeout 2 http://www2.wetter3.de/Archiv/GFS/"$jahr""$monat""$tag"12_48.gif -o ~/Synoptik/"$datum"/10_CAPE-Werte-"$datum".gif
+#
+# Radionsonenaufstieg in Schleswig (wenn vorhanden 12 Uhr, sonst 0 Uhr)
+curl --connect-timeout 2 "http://www.wetteronline.de/?pid=p_modell_expert&ireq=true&src=aktuell\
+/vermarktung/radiosonde/exporttempplots/wom/gif\
+/"$jahr"/"$monat"/"$tag"/12/10035.gif" \
+-o ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-12-Uhr.gif
+
+if [ `stat -c %s ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-12-Uhr.gif` = 43 ]; then
+echo 12-Uhr-Aufstieg noch nicht da. Downloade 0-Uhr-Aufstieg.
+curl --connect-timeout 2 "http://www.wetteronline.de/?pid=p_modell_expert&ireq=true&src=aktuell\
+/vermarktung/radiosonde/exporttempplots/wom/gif\
+/"$jahr"/"$monat"/"$tag"/00/10035.gif" \
+-o ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-00-Uhr.gif
+rm ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-12-Uhr.gif
+fi
+
+# Uberprueft im Archiv-Modus, ob der Radiosondenaufstieg vorliegt.
+if [ ! -z $1 ] && [ $1 = 'archiv' ] && [ `stat -c %s ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-*-Uhr.gif` = 43 ]; then
+rm ~/Synoptik/"$datum"/11_Schleswig-Temp-"$datum"-*-Uhr.gif
+echo Radiosondenaufstieg vom $tag.$monat.$jahr nicht vorhanden.
+fi
+
+#
+# Wettermastdaten (nicht im Archiv-Modus)
+if [ -z $1 ]; then
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_TT_48h.gif -o ~/Synoptik/"$datum"/12_Wettermast-Temp-"$datum".gif
+#
+if [ -f ~/Synoptik/"$datum"/12_Wettermast-Temp-"$datum".gif ]; then
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_SNC_DIR_48h.gif -o ~/Synoptik/"$datum"/13_Wettermast-Windrichtung-"$datum".gif
+#
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_P_48h.gif -o ~/Synoptik/"$datum"/14_Wettermast-Luftdruck-"$datum".gif
+#
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_G_48h.gif -o ~/Synoptik/"$datum"/15_Wettermast-Globalstrahlung-"$datum".gif
+#
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_CTB_48h.gif -o ~/Synoptik/"$datum"/16_Wettermast-Ceilometer-"$datum".gif
+#
+curl --connect-timeout 2 wettermast-hamburg.zmaw.de/plots/ZR_ND_48h.gif -o ~/Synoptik/"$datum"/17_Wettermast-Niederschlagsintensität-"$datum".gif
+fi
+#
+# Vorhersagen und Ensemblelaufe (nicht im Archiv-Modus)
+curl --connect-timeout 2 http://www.wetterzentrale.de/pics/MS_Hamburg_avn.png -o ~/Synoptik/"$datum"/18_Meteogramm-"$datum".png
+#
+curl --connect-timeout 2 http://www.wetterzentrale.de/pics/MU_Hamburg_avn.png -o ~/Synoptik/"$datum"/19_Meteogramm-Freie-Atmosphäre-"$datum".png
+#
+curl --connect-timeout 2 http://www.wetterzentrale.de/pics/MT8_Hamburg_ens.png -o ~/Synoptik/"$datum"/20_Ensemble-"$datum".png
+#
+curl --connect-timeout 2 http://www.wetterzentrale.de/pics/avnpanel1.gif -o ~/Synoptik/"$datum"/21_500-hPa-Vorhersage-"$datum".gif
+#
+curl --connect-timeout 2 http://www.wetterzentrale.de/pics/enspanel2.gif -o ~/Synoptik/"$datum"/22_500-hPa-Spaghetti-Plot-"$datum".gif
+#
+fi
+wait
+# Oeffnen der Bilder im Standardprogramm
+b=`ls ~/Synoptik/"$datum"/ | sort | head -n 1`
+xdg-open ~/Synoptik/"$datum"/$b
+wait
+#
+if [ -d ~/Dropbox ]; then
+echo -e \\n "\033[1;31m Keep [Enter], delete [del] or save files to Dropbox [drop]?\033[0m " \\c
+read var
+else
+echo -e \\n "\033[1;31m Keep [Enter] or delete [del] files?\033[0m " \\c
+read var
+fi
+#
+# Abfrage, ob Dateien geloescht oder im Dropbox-Ordner gespeichert werden sollen
+if [ ! -z $var ] && [ -d ~/Dropbox ] && [ "$var" = "drop" ]; then
+rsync -a ~/Synoptik/"$datum" ~/Dropbox/Synoptik
+echo "Wetterkarten vom $tag.$monat.$jahr in Dropbox gesichert."
+elif [ ! -z $var ] && [ "$var" = "del" ]; then
+rm -r ~/Synoptik/"$datum"/
+echo "Wetterkarten vom $tag.$monat.$jahr wurden gelöscht."
+ if [ ! "$(ls -A ~/Synoptik )" ];then rmdir ~/Synoptik;fi
+fi

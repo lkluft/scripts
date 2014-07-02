@@ -1,0 +1,20 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 07.04.2014
+#
+# purpose: auto-setup screen resolution for HDMI-use
+
+# check if HDMI port is used
+HDMI1=$(xrandr | grep HDMI1 | cut -d " " -f 2)
+HDMI2=$(xrandr | grep HDMI2 | cut -d " " -f 2)
+
+if [ ! -z $HDMI1 ] && [ $HDMI1 == connected ];then
+    # use xrandr to setup HDMI usage
+    xrandr --output VGA-2 --off --output LVDS1 --off --output HDMI1 --auto &> /dev/null
+    echo HDMI Einstellungen gesetzt.
+elif [ ! -z $HDMI2 ] && [ $HDMI2 == connected ];then
+    xrandr --output VGA-1 --off --output LVDS2 --off --output HDMI2 --auto &> /dev/null
+    echo HDMI Einstellungen gesetzt.
+else
+    echo Kein HDMI-Kabel angeschlossen.
+fi

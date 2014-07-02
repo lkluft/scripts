@@ -1,0 +1,11 @@
+#!/bin/bash
+# author: Lukas Kluft 
+# version: 25.05.2014
+#
+# purpose: Start an webcountdown in default browser
+case $1 in
+    "-h"|"--hours") $BROWSER http://www.webcountdown.de/?c=$(($2*3600)) &> /dev/null & ;;
+    "-m"|"--minutes") $BROWSER http://www.webcountdown.de/?c=$(($2*60)) &> /dev/null & ;;
+    "-s"|"--seconds") $BROWSER http://www.webcountdown.de/?c=$2 &> /dev/null & ;;
+    *) $BROWSER http://www.webcountdown.de/?c=$(($1*60)) &> /dev/null & ;;
+esac

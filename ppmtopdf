@@ -1,0 +1,11 @@
+#!/bin/bash
+for i in $@
+do
+if [ "${i#*.}" = "ppm" ];then
+	convert $i ${i%.ppm}.pdf
+	rm -- $i
+	rename -- 's/-//g' ${i%.ppm}.pdf
+else
+	echo $i ist keine ppm-Datei.
+fi
+done
