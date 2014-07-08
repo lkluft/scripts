@@ -1,25 +1,36 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 04.05.2014
+# version: 08.07.2014
 #
 # purpose: Skript zum Kompilieren und anschliessenden Betrachten
-# von tex Dokumenten 
+# von tex Dokumenten
 
-# Einlesen des Filenames ohne Dateiendung
+# Einlesen des Filenamens und Trennug von Name und Endung
 filename=$1
 name="${filename%.*}"
+ext="${filename#*.}"
 
-# Kompilieren
+# Test der Dateiendung der Eingabedatei
+if [ "$ext" != "tex" ];then
+    echo "ERROR: $filename is not a .tex file."
+    echo "USAGE: compiletex foo.tex"
+    exit 1
+fi
+
+# Kompilieren im halb-interaktiven Modus von pdflatex
 pdflatex -interaction=errorstopmode $name.tex
 
-# Wenn das Kompilieren erfolgreich war, erneut kompilieren und die erzeugte pdf in Evince betrachten
+# Folgender Block wird bei erfolgreicher erste Kompilierung ausgefuehrt
 if [[ $? == 0 ]];then
+    # BibTeX Aufruf
     bibtex $name.aux &> /dev/null
+    # Zwei weitere Kompilierungen im Hintergrund (keine Eingabe, kein Output)
     pdflatex -interaction=nonstopmode $name.tex &> /dev/null
     pdflatex -interaction=nonstopmode $name.tex &> /dev/null
+    # Oeffnen der erzeugten PDF in evince
     evince $name.pdf &> /dev/null &
-    
+
     # Aufraumen nach dem Kompilieren
-    echo "aux, log und toc sowie bbl und blg Dateien wurden entfernt."
-    rm $name.{aux,log,toc,bbl,blg} &> /dev/null
+    echo "aux, log, out und toc sowie bbl und blg Dateien wurden entfernt."
+    rm $name.{aux,log,toc,bbl,blg,out} &> /dev/null
 fi
