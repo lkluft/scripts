@@ -31,10 +31,10 @@ else
 fi
 
 # update vim syntax highlightin for arts (if script is existing)
-if [ $(which update_vim_arts_syntax) ];then
+if [ $(which update-vim-arts-syntax) ];then
     echo vim Syntax Highlighting wird aktualisiert.
     update-vim-arts-syntax
-    
+
     # succes message
     if [ $? = 0 ];then
         echo vim syntax file erfolgreich aktualisiert.
