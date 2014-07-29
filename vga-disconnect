@@ -1,0 +1,2 @@
+#!/bin/bash
+xrandr --output $(xrandr|grep VGA|grep ' connected'|cut -d ' ' -f1) --off
