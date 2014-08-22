@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 24.03.2014
+# version: 22.08.2014
 #
 # purpose: script to download and show den Top N of someones last.fm account
 
@@ -85,12 +85,7 @@ cat temp | grep title | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut 
 echo -e \\n"\033[1;37m\\t$when:\\n\\t$band - $song\033[0m "\\n
 
 # underbar with length of topbar
-n=$(echo "========== $u=s Top $n= $time ==========" | wc -m)
-for ((i=1;i<=$n-1;i++))
-    do
-    echo -e "\033[1;37;41m=\033[0m"\\c
-    done
-echo -e \\n
+echo -e "\033[1;37;41m$(echo "========== $u=s Top $n= $time ==========" | sed 's/./=/g')\033[0m"
 
 # remove temporary files
 rm temp temp2
