@@ -1,0 +1,14 @@
+# author: Lukas Kluft
+# version: 05.09.2014
+#
+# purpose: pull all git repositories
+
+blue='\e[0;34m'
+white='\e[0m'
+
+for gitdir in $HOME/git/*;
+    do
+    cd $gitdir
+    echo -e Aktuelles Verzeichnis: $blue$(pwd)$white
+    git pull
+    done
