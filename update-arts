@@ -1,8 +1,10 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 03.06.2014
+# version: 08.09.2014
 #
-# purpose: update the sourcefiles and build the executable of ARTS
+# purpose: update the sourcefiles and build the executable of ARTS.
+#           also update the ARTS syntax highlighting for vim and
+#           the arts-xml-data directory
 
 # download the latest sourcefiles using subversion
 cd /home/zmaw/u300509/lkluft/arts/
@@ -42,3 +44,9 @@ if [ $(which update-vim-arts-syntax) ];then
         echo Fehler bei Aktualisierung des vim syntax files.
     fi
 fi
+
+# update arts-xml-data
+cd /home/zmaw/u300509/lkluft/arts-xml-data/
+echo Aktuelles Verzeichnis ist $(pwd)
+echo Download der aktuellsten xml-data.
+svn update
