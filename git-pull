@@ -6,9 +6,18 @@
 blue='\e[0;34m'
 white='\e[0m'
 
-for gitdir in $HOME/git/*;
+if [[ $(hostname) == "apple"* ]];then
+    echo=gecho
+else
+    ech=echo
+fi
+
+
+for gitdir in $HOME/git/*
     do
-    cd $gitdir
-    echo -e Aktuelles Verzeichnis: $blue$(pwd)$white
-    git pull
+    if [[ "$gitdir" != *".git" ]];then
+        cd $gitdir
+        $echo -e Aktuelles Verzeichnis: $blue$(pwd)$white
+        git pull
+    fi
     done
