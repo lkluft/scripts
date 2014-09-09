@@ -9,7 +9,7 @@ white='\e[0m'
 if [[ $(hostname) == "apple"* ]];then
     echo=gecho
 else
-    ech=echo
+    echo=echo
 fi
 
 
