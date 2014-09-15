@@ -1,8 +1,9 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 08.09.2014
+# version: 15.09.2014
 #
-# purpose: update the sourcefiles and build the executable of ARTS.
+# purpose: check if an ARTS update is available. if so, download
+#           the sourcefiles and build the ARTS executable.
 #           also update the ARTS syntax highlighting for vim and
 #           the arts-xml-data directory
 
@@ -11,9 +12,9 @@ cd /home/zmaw/u300509/lkluft/arts/
 echo Aktuelles Verzeichnis ist $(pwd)
 
 if [[ $(svn info | grep Revision) == $(svn info -r HEAD | grep Revision) ]];then
-    echo -e \\tARTS ist auf dem aktuellen Stand.
+    echo ARTS ist auf dem aktuellen Stand.
 else
-    echo -e \\tDownload der aktuellsten sourcefiles.
+    echo Download der aktuellsten sourcefiles.
     svn update
 
     # get number of cores that are free to use (use halt of them)
@@ -26,32 +27,36 @@ else
     # build the executable
     cd build
     echo Aktuelles Verzeichnis ist $(pwd)
-    echo -e \\tKompilieren der executable mit $n CPU-Cores.
+    echo Kompilieren der executable mit $n CPU-Cores.
     make -j$n arts
 
     # success message
     if [ $? = 0 ];then
-        echo -e \\tARTS Update erfolgreich durchgeführt.
+        echo ARTS Update erfolgreich durchgeführt.
     else
-        echo -e \\tFehler beim ARTS Update.
+        echo Fehler beim ARTS Update.
     fi
 
     # update vim syntax highlightin for arts (if script is existing)
     if [ $(which update-vim-arts-syntax) ];then
-        echo -e \\tvim Syntax Highlighting wird aktualisiert.
+        echo vim Syntax Highlighting wird aktualisiert.
         update-vim-arts-syntax
 
         # succes message
         if [ $? = 0 ];then
-            echo -e \\tvim syntax file erfolgreich aktualisiert.
+            echo vim syntax file erfolgreich aktualisiert.
         else
-            echo -e \\t Fehler bei Aktualisierung des vim syntax files.
+            echo Fehler bei Aktualisierung des vim syntax files.
         fi
     fi
 
     # update arts-xml-data
     cd /home/zmaw/u300509/lkluft/arts-xml-data/
     echo Aktuelles Verzeichnis ist $(pwd)
-    echo -e \\tDownload der aktuellsten xml-data.
+    echo Download der aktuellsten xml-data.
     svn update
+
+    # print ChangeLog
+    CL="/home/zmaw/u300509/lkluft/arts/ChangeLog"
+    head -n $(( $(grep -n ^2 $CL | head -n 2 | tail -n 1 | cut -d ":" -f 1) -1)) $CL
 fi
