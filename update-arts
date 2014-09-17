@@ -1,11 +1,11 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 15.09.2014
+# version: 17.09.2014
 #
 # purpose: check if an ARTS update is available. if so, download
 #           the sourcefiles and build the ARTS executable.
 #           also update the ARTS syntax highlighting for vim and
-#           the arts-xml-data directory
+#           the arts-xml-data directory. show last ChangeLog entry
 
 # download the latest sourcefiles using subversion
 cd /home/zmaw/u300509/lkluft/arts/
@@ -20,8 +20,8 @@ else
     # get number of cores that are free to use (use halt of them)
     n=$(($(($(nproc)-$(cat /proc/loadavg | cut -d "." -f 1)))/2))
 
-    if [ $n -le 0 ];then
-        n=1
+    if [ $n -le 6 ];then
+        n=6
     fi
 
     # build the executable
@@ -39,7 +39,7 @@ else
 
     # update vim syntax highlightin for arts (if script is existing)
     if [ $(which update-vim-arts-syntax) ];then
-        echo vim Syntax Highlighting wird aktualisiert.
+        echo -e "\nvim Syntax Highlighting wird aktualisiert."
         update-vim-arts-syntax
 
         # succes message
@@ -52,11 +52,12 @@ else
 
     # update arts-xml-data
     cd /home/zmaw/u300509/lkluft/arts-xml-data/
-    echo Aktuelles Verzeichnis ist $(pwd)
-    echo Download der aktuellsten xml-data.
+    echo -e "\nAktuelles Verzeichnis ist $(pwd)"
+    echo Download der aktuellsten arts-xml-data.
     svn update
 
     # print ChangeLog
     CL="/home/zmaw/u300509/lkluft/arts/ChangeLog"
+    echo
     head -n $(( $(grep -n ^2 $CL | head -n 2 | tail -n 1 | cut -d ":" -f 1) -1)) $CL
 fi
