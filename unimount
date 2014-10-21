@@ -1,18 +1,20 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 08.04.2014
+# version: 21.10.2014
 #
-# purpose: Mount a remote directory via ssh
+# purpose: Mount remote directories via ssh
 
 # enter username at host server
 USERNAME=u300509
 
 if [[ $1 = -u ]];then
     # if parameter -u is given, unmount directory and delelte folder
-    fusermount -u $HOME/$USERNAME
-    rmdir $HOME/$USERNAME
+    fusermount -u $HOME/$USERNAME/thunder
+    fusermount -u $HOME/$USERNAME/lehre
+    find $HOME/$USERNAME -depth -exec rmdir {} \;
 else
     # create folder and mount remote directory
-    mkdir $HOME/$USERNAME
-    sshfs $USERNAME@login1.zmaw.de:/home/zmaw/$USERNAME $HOME/$USERNAME
+    mkdir -p $HOME/$USERNAME/{lehre,thunder}
+    sshfs -o follow_symlinks lehre: $HOME/$USERNAME/lehre
+    sshfs -o follow_symlinks thun: $HOME/$USERNAME/thunder
 fi
