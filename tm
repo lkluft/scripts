@@ -1,10 +1,16 @@
 #!/bin/bash
 # author: Lukas Kluft (adapted from ubuntuusers.de)
-# version: 25.05.2014
+# version: 03.11.2014
 #
 # purpose: attaches a running tmux session. if not running
 # tmux server is started.
-TMUX_SESSION=main
+
+# check if session name is given. otherweise set name to "main"
+if [[ -z $1 ]];then
+    TMUX_SESSION=main
+else
+    TMUX_SESSION=$1
+fi
 
 # if the session is already running, just attach to it.
 command tmux has-session -t $TMUX_SESSION
