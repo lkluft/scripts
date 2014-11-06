@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 21.10.2014
+# version: 06.11.2014
 #
 # purpose: Mount remote directories via ssh
 
@@ -9,12 +9,12 @@ USERNAME=u300509
 
 if [[ $1 = -u ]];then
     # if parameter -u is given, unmount directory and delelte folder
-    fusermount -u $HOME/$USERNAME/thunder
-    fusermount -u $HOME/$USERNAME/lehre
-    find $HOME/$USERNAME -depth -exec rmdir {} \;
+    fusermount -u $HOME/t7home
+    fusermount -u $HOME/l2home
+    rmdir $HOME/t7home $HOME/l2home
 else
     # create folder and mount remote directory
-    mkdir -p $HOME/$USERNAME/{lehre,thunder}
-    sshfs -o follow_symlinks lehre: $HOME/$USERNAME/lehre
-    sshfs -o follow_symlinks thun: $HOME/$USERNAME/thunder
+    mkdir -p $HOME/{t7home,l2home}
+    sshfs -o follow_symlinks lehre: $HOME/l2home
+    sshfs -o follow_symlinks thun: $HOME/t7home
 fi
