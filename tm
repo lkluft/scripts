@@ -17,8 +17,8 @@ tmux has-session -t $TMUX_SESSION
 if [ $? -eq 0 ]; then
     echo "Session $TMUX_SESSION already exists. Attaching."
     sleep 1
-    tmux attach -t $TMUX_SESSION
+    TERM=xterm-256color tmux attach -t $TMUX_SESSION
     exit 0;
 else
-    tmux new -s $TMUX_SESSION
+    TERM=xterm-256color tmux new -s $TMUX_SESSION
 fi
