@@ -118,7 +118,7 @@ use Config;
 use File::Basename;
 use File::Copy;
 use File::Glob ':glob';    # Better glob.  Does not use space as item separator.
-use File::Path 2.08 qw( make_path );
+use File::Path 2.07 qw( make_path );
 use FileHandle;
 use File::Find;
 use List::Util qw( max );
