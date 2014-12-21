@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 17.10.2014
+# version: 21.12.2014
 #
 # purpose: automatocally update the system
 
@@ -14,12 +14,14 @@ sudo apt-get -y dist-upgrade
 
 # clean up
 echo -e "\n\nClean up\n"
-sudo apt-get autoclean
+sudo apt-get -y autoclean
 sudo apt-get -y autoremove
 
+# if existing, remove unused configuration files
 if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
     echo -e "\n\nRemove unused configuration files\n"
     sudo dpkg --purge $(dpkg --list | grep ^rc | cut -d " " -f 3)
 fi
 
+# exit script
 exit 0
