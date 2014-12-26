@@ -1,27 +1,28 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 21.12.2014
+# version: 26.12.2014
 #
-# purpose: automatocally update the system
+# purpose: automatically update the system
 
 # update package list
-echo -e "Update package list\n"
-sudo apt-get -y update
+echo -e "\t#### Update package list ####\n"
+sudo apt-get update
 
-# upgrade all packages
-echo -e "\n\nUpdate packages\n"
+# install new packages
+echo -e "\n\n\t#### Install new packages ####\n"
 sudo apt-get -y dist-upgrade
 
 # clean up
-echo -e "\n\nClean up\n"
-sudo apt-get -y autoclean
+echo -e "\n\n\t#### Remove old downloaded archive files ####\n"
+sudo apt-get autoclean
+
+echo -e "\n\n\t#### Remove unused packages ####\n"
 sudo apt-get -y autoremove
 
 # if existing, remove unused configuration files
 if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
-    echo -e "\n\nRemove unused configuration files\n"
+    echo -e "\n\n\t#### Remove unused configuration files ####\n"
     sudo dpkg --purge $(dpkg --list | grep ^rc | cut -d " " -f 3)
 fi
 
-# exit script
 exit 0
