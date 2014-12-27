@@ -217,6 +217,46 @@ function sp-search {
   )
 
   sp-open $SPTFY_URI
+
+  # show which song was selected
+  sleep 1
+  sp-current
+}
+
+function sp-lyrics {
+    # Prints lyrics of currently played song
+    require curl
+    require less
+
+    # get artist and title from metadata function
+    artist=$(sp-metadata | grep artist | cut -d "|" -f 2 | sed 's/ /+/g')
+    title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed 's/ /+/g')
+
+    # write lyrics from makeitpersonal.co to temporary file
+    lyrics=$(mktemp)
+    curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
+
+    if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
+        # if no lyrics are fund, try title substring in front of first "-" to get
+        # songs like "Rebel Yell - Remastered"
+        title=$(sp-metadata | grep title | cut -d "|" -f 2 | cut -d "-" -f 1 | sed 's/ /+/g')
+        curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
+        if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
+            # if no lyrics are found, try title without strings between paranthesis to get
+            # song like "A-Punk (Album)"
+            title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed 's/(.*)//' | sed 's/ /+/g')
+            curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
+            if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
+                echo "Sorry, there are no lyrics for this song yet."
+                exit
+            fi
+        fi
+    fi
+
+    # print artist, title and lyrics
+    header=$(echo "#### $artist - $title ####" | sed 's/+/ /g')
+    sed -i "1i$header" $lyrics
+    less $lyrics
 }
 
 function sp-version {
