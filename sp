@@ -188,6 +188,8 @@ function sp-help {
   echo "  sp metadata   - Dump the current track's metadata"
   echo "  sp eval       - Return the metadata as a shell script"
   echo ""
+  echo "  sp lyrics     - Print lyrics of currently playing track"
+  echo ""
   echo "  sp art        - Print the URL to the current track's album artwork"
   echo "  sp display    - Display the current album artwork with \`display\`"
   echo "  sp feh        - Display the current album artwork with \`feh\`"
@@ -229,32 +231,32 @@ function sp-lyrics {
     require less
 
     # get artist and title from metadata function
-    artist=$(sp-metadata | grep artist | cut -d "|" -f 2 | sed 's/ /+/g')
-    title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed 's/ /+/g')
+    artist=$(sp-metadata | grep artist | cut -d "|" -f 2 | sed -e 's/ /+/g' -e 's/(.*)//')
+    title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed -e 's/ /+/g' -e 's/\[.*\]//')
 
     # write lyrics from makeitpersonal.co to temporary file
     lyrics=$(mktemp)
     curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
 
     if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
-        # if no lyrics are fund, try title substring in front of first "-" to get
-        # songs like "Rebel Yell - Remastered"
-        title=$(sp-metadata | grep title | cut -d "|" -f 2 | cut -d "-" -f 1 | sed 's/ /+/g')
+        # if no lyrics are found, try title without strings between paranthesis to get
+        # song like "A-Punk (Album)"
+        title=$(echo $title | sed 's/(.*)//')
         curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
         if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
-            # if no lyrics are found, try title without strings between paranthesis to get
-            # song like "A-Punk (Album)"
-            title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed 's/(.*)//' | sed 's/ /+/g')
+            # if no lyrics are fund, try title substring in front of first " - " to get
+            # songs like "Rebel Yell - Remastered"
+            title=$(echo $title | sed 's/+-+.*//')
             curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
             if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
-                echo "Sorry, there are no lyrics for this song yet."
+                echo "Sorry, We don't have lyrics for this song yet."
                 exit
             fi
         fi
     fi
 
     # print artist, title and lyrics
-    header=$(echo "#### $artist - $title ####" | sed 's/+/ /g')
+    header=$(echo "#### $artist - $title ####" | sed -r 's/[+]+/ /g')
     sed -i "1i$header" $lyrics
     less $lyrics
 }
