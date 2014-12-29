@@ -286,6 +286,7 @@ SPOTIFY_PID="$(pidof -s spotify)"
 if [[ -z "$SPOTIFY_PID" ]]; then
   if type spotify &> /dev/null;then
       spotify &> /dev/null &
+      exit 0
   else
       $BROWSER "https://play.spotify.com/" &> /dev/null &
       echo "Spotify started as browser session. No command line control possible"
