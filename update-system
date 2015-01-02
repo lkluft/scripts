@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 26.12.2014
+# version: 02.01.2015
 #
 # purpose: automatically update the system
 
@@ -24,5 +24,8 @@ if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
     echo -e "\n\n\t#### Remove unused configuration files ####\n"
     sudo dpkg --purge $(dpkg --list | grep ^rc | cut -d " " -f 3)
 fi
+
+# broadcast a message to all users on system
+echo system updated | sudo wall
 
 exit 0
