@@ -1,28 +1,37 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 08.01.2015
+# version: 30.01.2015
 #
 # purpose: automatically update the system
 
+# verbose mode
+if [[ ! -z $1 && "$1" -eq "-v" ]];then
+    v=1
+fi
+
+log(){
+    [[ $v -eq 1 ]] && "$@" || "$@" &> /dev/null
+}
+
 # update package list
-echo -e "\t#### Update package list ####\n"
-sudo apt-get update
+log echo -e "\t#### Update package list ####\n"
+log sudo apt-get update
 
 # install new packages
-echo -e "\n\n\t#### Install new packages ####\n"
-sudo apt-get -y dist-upgrade
+log echo -e "\n\n\t#### Install new packages ####\n"
+log sudo apt-get -y dist-upgrade
 
 # clean up
-echo -e "\n\n\t#### Remove old downloaded archive files ####\n"
-sudo apt-get autoclean
+log echo -e "\n\n\t#### Remove old downloaded archive files ####\n"
+log sudo apt-get autoclean
 
-echo -e "\n\n\t#### Remove unused packages ####\n"
-sudo apt-get -y autoremove
+log echo -e "\n\n\t#### Remove unused packages ####\n"
+log sudo apt-get -y autoremove
 
 # if existing, remove unused configuration files
 if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
-    echo -e "\n\n\t#### Remove unused configuration files ####\n"
-    sudo dpkg --purge $(dpkg --list | grep ^rc | cut -d " " -f 3)
+    log echo -e "\n\n\t#### Remove unused configuration files ####\n"
+    log sudo dpkg --purge $(dpkg --list | grep ^rc | cut -d " " -f 3)
 fi
 
 exit 0
