@@ -1,0 +1,38 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 28.02.2015
+#
+# purpose: install scientific python modules in a virtual environment
+
+# install libraries needed by some modules
+sudo apt-get install -y \
+    python-dev                  `# NumPy` \
+    tcl-dev tk-dev              `# matplotlib` \
+    liblapack-dev gfortran      `# SciPy` \
+    libhdf5-dev libnetcdf-dev   `# netCDF4` \
+    libgeos-dev libproj-dev     `# cartopy`
+
+# upgrade setuptools and pip to the latest version
+pip install -U setuptools pip
+
+# IPython/Notebook: enhanced python shell
+pip install pyzmq jinja2 tornado jsonschema ipython
+
+# NumPy: mathematical classes and functions
+pip install numpy
+
+# matplotlib: object-oriented plotting library
+pip install matplotlib
+
+# SciPy: scientific computing package
+pip install scipy
+
+# netCDF4: interface to the netCDF version 4 library
+pip install netCDF4
+
+# cartopy: drawing maps
+pip install cython && pip install shapely pyshp cartopy
+
+# skewt: skew-T log-p diagrams for radiosonde soundings
+pip install skewt
+
