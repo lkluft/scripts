@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 28.02.2015
+# version: 01.03.2015
 #
 # purpose: install scientific python modules in a virtual environment
 
@@ -15,8 +15,10 @@ sudo apt-get install -y \
 # upgrade setuptools and pip to the latest version
 pip install -U setuptools pip
 
-# IPython/Notebook: enhanced python shell
-pip install pyzmq jinja2 tornado jsonschema ipython
+# IPython: enhanced python shell
+pip install ipython
+# IPython Notebook: modules required for IPython Notebook
+pip install pyzmq pygments mistune jinja2 tornado jsonschema
 
 # NumPy: mathematical classes and functions
 pip install numpy
