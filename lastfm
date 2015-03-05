@@ -1,91 +1,83 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 22.08.2014
+# version: 04.05.2015
 #
 # purpose: script to download and show den Top N of someones last.fm account
 
-# set N value for Top N
-if [ ! -z "$1" ];then
-    if [ "$1" -lt 1 ];then # if N<1 set N=1
-        n=1
-    else
-        n=$1
-    fi
-else
-    n=10 # if no N is given set N=10
+# get username
+if ( ! getopts ":u:" opt );then
+    echo "ERROR: No user specified"
+    echo "USAGE: $0 -u <username>"
+    exit 1
 fi
 
-# set username
-echo -e "Username eingeben:" \\c
-read u
+while getopts ":u:" opt; do
+    case $opt in
+        u)  user=$OPTARG ;;
+        \?) echo "ERROR: Invalid option: $OPTARG"
+            echo "USAGE: $0 -u <username>"
+            exit 1 ;;
+        :)  echo "ERROR: No user specified"
+            echo "USAGE: $0 <username>"
+            exit 1 ;;
+  esac
+done
 
-# download the charts and show "hour glass" while loading
-range=week      # default time range for charts
-type=artists    # chart type
-wget -O temp -q  http://www.lastfm.de/user/$u/charts?rangetype=$range&subtype=$type | \
-    while [ $(ps -ef | grep wget | grep -v grep | wc -l) -eq 1 ];do echo -e \\r"Load |" \\c; \
-    sleep 0.2;echo -e \\r"Load /" \\c;sleep 0.2;echo -e \\r"Load â€”" \\c; \
-    sleep 0.2;echo -e \\r"Load \\" \\c;sleep 0.2;done
+# turning hourglass for loading-message
+hourglass(){
+    echo -e \\r"Load |" \\c; \
+    sleep 0.2;echo -e \\r"Load /" \\c; \
+    sleep 0.2;echo -e \\r"Load â€”" \\c; \
+    sleep 0.2;echo -e \\r"Load \\" \\c; \
+    sleep 0.2
+}
+
+# download website data
+tmp1=$(mktemp)
+tmp2=$(mktemp)
+
+# download user's charts
+wget -O $tmp1 -q  http://www.lastfm.de/user/$user/charts?rangetype=week&subtype=artists | \
+    while [ $(pidof wget) ];do hourglass; done
 
 # download start page for last song
-wget -O temp2 -q http://www.lastfm.de/user/$u | \
-    while [ $(ps -ef | grep wget | grep -v grep | wc -l) -eq 1 ];do echo -e \\r"Load |" \\c; \
-    sleep 0.2;echo -e \\r"Load /" \\c;sleep 0.2;echo -e \\r"Load â€”" \\c; \
-    sleep 0.2;echo -e \\r"Load \\" \\c;sleep 0.2;done
+wget -O $tmp2 -q http://www.lastfm.de/user/$user | while [ $(pidof wget) ];do hourglass; done
 
-# get last song and interpreter
-band=$(cat temp2 | grep /music/ | head -2 | grep '">' | cut -d ">" -f 2 | cut -d "<" -f 1 | sed 's/amp;//g')
-song=$(cat temp2 | grep /music/ | head -2 | grep '">' | cut -d ">" -f 4 | cut -d "<" -f 1 | sed 's/amp;//g')
+
+# get last track
+band=$(grep "/music/" $tmp2 | head -2 | grep '">' | cut -d ">" -f 2 | cut -d "<" -f 1 | sed 's/amp;//g')
+song=$(grep "/music/" $tmp2 | head -2 | grep '">' | cut -d ">" -f 4 | cut -d "<" -f 1 | sed 's/amp;//g')
 
 # when was the last song played
 # usage of head instead of cat because of friends in the side bar that could listen to songs
-when1=$(head -n 500 temp2 | grep "Hört gerade")
-when2=$(head -n 500 temp2 | grep "Soeben")
-
-# check which when variable is not empty
-if [ ! -z "$when1" ];then 
+if [[ ! -z $(head -n 500 $tmp2 | grep "Hört gerade") ]];then
     when="Spielt gerade"
-elif [ ! -z "$when2" ];then
+elif [[ ! -z $(head -n 500 $tmp2 | grep "Soeben") ]];then
     when="Spielte soeben"
 else
-    when=$(cat temp2 | grep "date" | cut -d ">" -f 2 | cut -d "<" -f 1 | head -2 | tail -1)
+    when=$(grep "date" $tmp2 | cut -d ">" -f 2 | cut -d "<" -f 1 | head -2 | tail -1)
 fi
+
 
 # time range of given charts (e.g. Last Week)
-time=$(cat temp | grep "current first chart" | cut -d ">" -f 3 | cut -d "<" -f 1)
-time=$(echo $time)
-
-# top 3 artists
-first=$(cat temp | grep title | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut -d '"' -f 2 | sed 's/amp;//g' | awk 'FNR == 1')
-
-second=$(cat temp | grep title | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut -d '"' -f 2 | sed 's/amp;//g' | \
-    sed 's/Der Scrobbler/.../g' | sed 's/Der iOS-Scrobbler/Keine weiteren Bands im Zeitraum/g' | awk 'FNR == 2')
-
-third=$(cat temp | grep title | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut -d '"' -f 2 | sed 's/amp;//g' | \
-    sed 's/Der Scrobbler/.../g' | sed 's/Der iOS-Scrobbler/Keine weiteren Bands im Zeitraum/g' | awk 'FNR == 3')
-
+time=$(echo $(grep "current first chart" $tmp1 | cut -d ">" -f 3 | cut -d "<" -f 1))
 
 # print header bar
-if [ ! -z "$1" ] && [ "$1" -lt 3 ]; then
-    echo -e \\r"\033[1;37;41m========== $u's Top 3: $time ==========\033[0m "\\n
-else
-    echo -e \\r"\033[1;37;41m========== $u's Top $n: $time ==========\033[0m "\\n
-fi
+echo -e \\r"\033[1;37;41m========== $user: $time ==========\033[0m "\\n
 
-# highlight top 3
-echo -e "\033[1;34m$first \033[0m "
-echo -e "\033[1;32m$second \033[0m "
-echo -e "\033[1;36m$third \033[0m "
-
-# print remaining artists
-cat temp | grep title | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut -d '"' -f 2 | head -$n | sed 's/amp;//g' | \
-    sed 's/Der Scrobbler/.../g' | sed 's/Der iOS-Scrobbler/Keine weiteren Bands im Zeitraum/g' | awk "FNR > 3"
+# print a sorted list of artists played in the last week
+grep "title" $tmp1 | awk 'NR >= 6' | cut -d "=" -f 3 | cut -d ">" -f 1 | cut -d '"' -f 2 | head -10 | \
+    sed -e 's/amp;//g' \
+        -e 's/, /\t/' \
+        -e 's/ Mal gespielt/x/' \
+        -e 's/einx/1x/' \
+        -e 's/Der Scrobbler/.../g' \
+        -e 's/Der iOS-Scrobbler/Keine weiteren Bands im Zeitraum/g' | \
+    cat -n | column -t -s $'\t'
 
 # print last song
 echo -e \\n"\033[1;37m\\t$when:\\n\\t$band - $song\033[0m "\\n
 
 # underbar with length of topbar
-echo -e "\033[1;37;41m$(echo "========== $u=s Top $n= $time ==========" | sed 's/./=/g')\033[0m"
+echo -e "\033[1;37;41m$(echo "========== $user: $time ==========" | sed 's/./=/g')\033[0m"
 
-# remove temporary files
-rm temp temp2

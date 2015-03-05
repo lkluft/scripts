@@ -1,0 +1,26 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 05.03.2015
+#
+# purpose: set random picture as background image
+
+# set directory conatining the pictures
+# dark and light mode for different picture  brightness
+[[ -z $1 ]] || [[ $1 == "--light" || $1 == "--dark" ]] || exit 1
+if [[ $1 == "--light" ]];then
+    DIR="/home/lukas/.wallpaper/light/"
+elif [[ $1 == "--dark" ]];then
+    DIR="/home/lukas/.wallpaper/dark/"
+else
+    DIR="/home/lukas/.wallpaper/"
+fi
+
+# get random picture
+PIC=$(find $DIR -type f | shuf -n 1)
+
+# set dbus session. this enables cron to change the background
+PID=$(pgrep gnome-session)
+export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
+
+# set picture as background image
+gsettings set org.gnome.desktop.background picture-uri file://$PIC
