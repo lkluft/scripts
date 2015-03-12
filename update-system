@@ -10,7 +10,7 @@ if [[ ! -z $1 && "$1" -eq "-v" ]];then
 fi
 
 log(){
-    [[ $v -eq 1 ]] && "$@" || "$@" &> /dev/null
+    [[ $v -eq 1 ]] && "$@" || "$@" 1> /dev/null
 }
 
 # update package list
