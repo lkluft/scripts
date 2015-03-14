@@ -1,9 +1,14 @@
 #!/bin/bash
+[[ ! -z $1 ]] && [[ $1 = "-v" ]] && verbose=1
+
+log(){
+    [[ $verbose = 1 ]] && "$@" || "$@" 1> /dev/null
+}
 
 # If this is our first run, save a copy of the system's original hosts file and set to read-only for safety
 if [ ! -f /etc/hosts-system ]
 then
- echo "Saving copy of system's original hosts file..."
+ log echo "Saving copy of system's original hosts file..."
  cp /etc/hosts /etc/hosts-system
  chmod 444 /etc/hosts-system
 fi
@@ -13,10 +18,10 @@ temphosts1=`mktemp`
 temphosts2=`mktemp`
 
 # Obtain various hosts files and merge into one
-echo "Downloading ad-blocking hosts files..."
-wget -nv -O - http://winhelp2002.mvps.org/hosts.txt >> $temphosts1
-wget -nv -O - http://someonewhocares.org/hosts/hosts >> $temphosts1
-wget -nv -O - "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext" >> $temphosts1
+log echo "Downloading ad-blocking hosts files..."
+wget -qnv -O - http://winhelp2002.mvps.org/hosts.txt >> $temphosts1
+wget -qnv -O - http://someonewhocares.org/hosts/hosts >> $temphosts1
+wget -qnv -O - "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext" >> $temphosts1
 
 # Do some work on the file:
 # 1. Remove MS-DOS carriage returns
@@ -28,19 +33,19 @@ wget -nv -O - "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=
 # 7. Delete any comments on lines
 # 8. Clean up leftover trailing blanks
 # Pass all this through sort with the unique flag to remove duplicates and save the result
-echo "Parsing, cleaning, de-duplicating, sorting..."
+log echo "Parsing, cleaning, de-duplicating, sorting..."
 
 sed -e 's/\r//' -e '/^127.0.0.1/!d' -e '/localhost/d' -e '/dropbox.com/d' -e 's/127.0.0.1/0.0.0.0/' -e 's/ \+/\t/' -e 's/#.*$//' -e 's/[ \t]*$//' < $temphosts1 | sort -u > $temphosts2
 
 # Combine system hosts with adblocks
-echo Merging with original system hosts...
-echo -e "\n# Ad blocking hosts generated "`date` | cat /etc/hosts-system - $temphosts2 > /etc/hosts
+log echo Merging with original system hosts...
+log echo -e "\n# Ad blocking hosts generated "`date` | cat /etc/hosts-system - $temphosts2 > /etc/hosts
 
 # Clean up temp files and remind user to copy new file
-echo "Cleaning up..."
+log echo "Cleaning up..."
 rm $temphosts1 $temphosts2
-echo "Done."
-echo
-echo "You can always restore your original hosts file with this command:"
-echo "cp /etc/hosts-system /etc/hosts"
-echo "so don't delete that file! (It's saved read-only for your protection.)"
+log echo "Done."
+log echo
+log echo "You can always restore your original hosts file with this command:"
+log echo "cp /etc/hosts-system /etc/hosts"
+log echo "so don't delete that file! (It's saved read-only for your protection.)"
