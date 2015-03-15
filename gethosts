@@ -39,7 +39,7 @@ sed -e 's/\r//' -e '/^127.0.0.1/!d' -e '/localhost/d' -e '/dropbox.com/d' -e 's/
 
 # Combine system hosts with adblocks
 log echo Merging with original system hosts...
-log echo -e "\n# Ad blocking hosts generated "`date` | cat /etc/hosts-system - $temphosts2 > /etc/hosts
+echo -e "\n# Ad blocking hosts generated "`date` | cat /etc/hosts-system - $temphosts2 > /etc/hosts
 
 # Clean up temp files and remind user to copy new file
 log echo "Cleaning up..."
