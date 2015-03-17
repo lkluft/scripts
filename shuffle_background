@@ -1,8 +1,11 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 05.03.2015
+# version: 17.03.2015
 #
 # purpose: set random picture as background image
+
+# exit if DISPLAY is not set
+[[ -z $DISPLAY ]] && exit 1
 
 # set directory conatining the pictures
 # dark and light mode for different picture  brightness
