@@ -1,0 +1,24 @@
+# author: Lukas Kluft
+# version: 19.03.2015
+#
+# purpose: install packages on a fresh Ubuntu install
+
+# add Spotify software repository
+sudo add-apt-repository 'deb http://repository.spotify.com/ stable non-free'
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 94558F59
+
+# add Dropbox software repository
+sudo add-apt-repository 'deb http://linux.dropbox.com/ubuntu trusty non-free'
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 5044912E  
+
+sudo apt-get update
+sudo apt-get install -y \
+    vim-gnome           `# text editor` \
+    git                 `# version control system` \
+    chromium-browser    `# web browser` \
+    python-virtualenv   `# virtual python environment` \
+    cdo grads           `# data operator/visulisation` \
+    spotify-client      `# Spotify music streaming` \
+    dropbox             `# Dropbox file sharing` \
+    keepassx            `# password manager`
+
