@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft (adapted from ubuntuusers.de)
-# version: 11.11.2014
+# version: 27.03.2015
 #
 # purpose: attaches a running tmux session. if not running
 # tmux server is started.
@@ -13,12 +13,8 @@ else
 fi
 
 # if the session is already running, just attach to it.
-tmux has-session -t $TMUX_SESSION
-if [ $? -eq 0 ]; then
-    echo "Session $TMUX_SESSION already exists. Attaching."
-    sleep 1
+if tmux has-session -t $TMUX_SESSION; then
     TERM=xterm-256color tmux attach -t $TMUX_SESSION
-    exit 0;
 else
     TERM=xterm-256color tmux new -s $TMUX_SESSION
 fi

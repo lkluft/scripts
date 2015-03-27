@@ -4,6 +4,9 @@
 #
 # purpose: automatically update the system
 
+# set PATH (necessary if run as cron job)
+PATH="$PATH:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
+
 # verbose mode
 if [[ ! -z $1 && "$1" -eq "-v" ]];then
     v=1
