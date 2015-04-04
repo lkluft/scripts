@@ -1,0 +1,22 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 04.04.2015
+#
+# purpose: create an overview on some atmospheric properties
+
+# if not present, create cirectory to store data
+PICDIR="$HOME/Wettermast"
+[[ -d $PICDIR ]] || mkdir $PICDIR
+cd $PICDIR
+
+# get the 48h and 8d time series form Wettermast Hamburg
+wget -q http://wettermast-hamburg.zmaw.de/plots/ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q,CTB}{_48h,_8d}.gif
+
+# create two overview plots
+date=$(date +%F_%H%M)
+convert ZR_{TT,RH,P,SNC_DIR,SNC_VEL,BB,Q,CTB}_48h.gif -append ${date}_wettermast_48h.png
+convert ZR_{TT,RH,P,SNC_DIR,SNC_VEL,BB,Q,CTB}_8d.gif -append ${date}_wettermast_8d.png
+
+# remove the single files
+rm ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q,CTB}{_48h,_8d}.gif
+
