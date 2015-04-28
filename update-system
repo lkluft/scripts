@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 30.01.2015
+# version: 28.04.2015
 #
 # purpose: automatically update the system
 
@@ -8,13 +8,10 @@
 PATH="$PATH:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
 
 # verbose mode
-if [[ ! -z $1 && "$1" -eq "-v" ]];then
-    v=1
-fi
+[[ ! -z $1 && "$1" -eq "-v" ]] && v=1
 
-log(){
-    [[ $v -eq 1 ]] && "$@" || "$@" 1> /dev/null
-}
+log(){ [[ $v -eq 1 ]] && "$@" || "$@" 1> /dev/null ; }
+
 
 # update package list
 log echo -e "\t#### Update package list ####\n"
@@ -22,14 +19,14 @@ log sudo apt-get update
 
 # install new packages
 log echo -e "\n\n\t#### Install new packages ####\n"
-log sudo apt-get -y dist-upgrade
+log sudo DEBIAN_FRONTEND=noninteractive apt-get -y dist-upgrade
 
 # clean up
 log echo -e "\n\n\t#### Remove old downloaded archive files ####\n"
 log sudo apt-get autoclean
 
 log echo -e "\n\n\t#### Remove unused packages ####\n"
-log sudo apt-get -y autoremove
+log sudo DEBIAN_FRONTEND=noninteractive apt-get -y autoremove
 
 # if existing, remove unused configuration files
 if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
@@ -38,3 +35,4 @@ if [[ $(dpkg --list | grep ^rc | cut -d " " -f 3) ]];then
 fi
 
 exit 0
+

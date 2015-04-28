@@ -1,5 +1,5 @@
 # author: Lukas Kluft
-# version: 19.03.2015
+# version: 18.04.2015
 #
 # purpose: install packages on a fresh Ubuntu install
 
@@ -19,12 +19,14 @@ sudo apt-get install -y \
     git                         `# version control system` \
     tmux                        `# terminal multiplexer` \
     sshfs                       `# mount filesystems via SSH` \
+    openssh-server              `# SSH server` \
     dropbox                     `# Dropbox file sharing` \
     keepassx                    `# password manager` \
     dict dict-de-en dictd       `# dictionary` \
     curl                        `# transfer data from server` \
     spotify-client              `# Spotify music streaming` \
     python-virtualenv           `# virtual python environment` \
+    gfortran mpich2             `# GNU Fortran compiler with MPI´ \
     chromium-browser            `# web browser` \
     pepperflashplugin-nonfree   `# Flash player for browsers` \
     texlive texlive-lang-german texlive-doc-de texlive-latex-extra \

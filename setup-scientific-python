@@ -1,8 +1,11 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 01.03.2015
+# version: 29.03.2015
 #
 # purpose: install scientific python modules in a virtual environment
+
+# check if a virtualenv is activated
+[[ -z $VIRTUAL_ENV ]] && echo ERROR: No virtualenv activated. && exit 1
 
 # install libraries needed by some modules
 sudo apt-get install -y \
@@ -11,6 +14,10 @@ sudo apt-get install -y \
     liblapack-dev gfortran      `# SciPy` \
     libhdf5-dev libnetcdf-dev   `# netCDF4` \
     libgeos-dev libproj-dev     `# cartopy`
+
+# link site-packages needed for matplotlib
+ln -sf /usr/lib/python2.7/dist-packages/{glib,gobject,cairo,gtk-2.0,pygtk.py,pygtk.pth} \
+    $VIRTUAL_ENV/lib/python2.7/site-packages
 
 # upgrade setuptools and pip to the latest version
 pip install -U setuptools pip
