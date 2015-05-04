@@ -1,11 +1,11 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 28.04.2015
+# version: 04.05.2015
 #
 # purpose: automatically update the system
 
-# set PATH (necessary if run as cron job)
-PATH="$PATH:/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
+# check if run as root/sudo
+[[ $(whoami) == 'root' ]] || { echo 'ERROR: run as root'; exit 1 ; }
 
 # verbose mode
 [[ ! -z $1 && "$1" -eq "-v" ]] && v=1
