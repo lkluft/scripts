@@ -258,7 +258,7 @@ function sp-lyrics {
     # print artist, title and lyrics
     header=$(echo "#### $artist - $title ####" | sed -r 's/[+]+/ /g')
     sed -i "1i$header" $lyrics
-    less $lyrics
+    less -s $lyrics
 }
 
 function sp-version {
