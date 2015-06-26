@@ -1,15 +1,20 @@
 # author: Lukas Kluft
-# version: 15.05.2015
+# version: 26.06.2015
 #
 # purpose: install packages on a fresh Ubuntu install
 
+# check if run as root/sudo
+[[ $(whoami) == 'root' ]] || { echo 'ERROR: run as root'; exit 1 ; }
+
 # add Spotify software repository
-sudo add-apt-repository 'deb http://repository.spotify.com/ stable non-free'
-sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 94558F59
+sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 94558F59 D2C19886
+echo 'deb http://repository.spotify.com/ stable non-free' \
+| sudo tee /etc/apt/sources.list.d/spotify.list
 
 # add Dropbox software repository
-sudo add-apt-repository 'deb http://linux.dropbox.com/ubuntu trusty main'
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 5044912E
+echo 'deb http://linux.dropbox.com/ubuntu trusty main' \
+| sudo tee /etc/apt/sources.list.d/dropbox.list
 
 # install packages
 sudo apt-get update
@@ -25,11 +30,12 @@ sudo apt-get install -y \
     dict dict-de-en dictd       `# dictionary` \
     curl                        `# transfer data from server` \
     spotify-client              `# Spotify music streaming` \
-    python-virtualenv           `# virtual python environment` \
-    gfortran openmpi-bin        `# GNU Fortran compiler with MPI´ \
+    python-pip                  `# python package installer` \
+    gfortran openmpi-bin        `# GNU Fortran compiler with MPI` \
     chromium-browser            `# web browser` \
     pepperflashplugin-nonfree   `# Flash player for browsers` \
-    texlive texlive-lang-german texlive-doc-de texlive-latex-extra \
+    texlive texlive-lang-german texlive-doc-de \
+    texlive-latex-extra         `# LaTeX` \
     latex-beamer                `# LaTeX presentations` \
     latexmk                     `# LaTeX compiler` \
     texmaker                    `# LaTeX editor` \
