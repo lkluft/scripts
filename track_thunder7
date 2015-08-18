@@ -1,0 +1,28 @@
+#!/bin/bash
+# author: Lukas Kluft
+# version: 18.08.2015
+#
+# purpose: check if thunder7 is mounted
+
+notification_file=$HOME/Desktop/thunder7_offline  # file used as indicator
+file_to_track=$HOME/t7home/.bashrc  # file to track (in t7home)
+refresh_rate=5  # check interval in seconds
+
+# function to create/remove notification file on Desktop
+toggle_notification()
+{
+    if [[ $1 == 1 ]]; then
+        touch $notification_file
+    elif [[ $1 == 0 ]]; then
+        [[ -f $notification_file ]] && rm $notification_file
+    fi
+}
+
+# actual check
+toggle_notification 0
+while [[ -f $file_to_track ]]
+    do
+        sleep $refresh_rate
+    done
+toggle_notification 1
+
