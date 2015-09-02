@@ -1,27 +1,22 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 26.08.2015
+# version: 28.08.2015
 #
 # purpose: update current or all conda environments
 
-if [[ $1 == "--all" || $1 == "-a" ]]; then
-    # get current environment
-    initial_env=$(conda env list | grep \* | cut -d " " -f 1)
+# check if conda is installed
+hash conda &> /dev/null || exit 1
 
+if [[ $1 == "--all" || $1 == "-a" ]]; then
     # update all environments
     for env in $(conda info --envs | sed /^[#]/d | cut -d " " -f 1)
     do
-        source activate $env
-        conda update -y --all
-        conda clean -y -p
-        conda clean -y -t
+        conda update -n $env -y --all
     done
-
-    # activate initial environment
-    echo source activate $initial_env
 else
-        conda update -y --all
-        conda clean -y -p
-        conda clean -y -t
+    # updated current environment
+    conda update -y --all
 fi
 
+# clean unused packages and tarballs
+conda clean -pty
