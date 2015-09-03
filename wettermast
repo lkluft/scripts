@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 04.04.2015
+# version: 03.09.2015
 #
 # purpose: create an overview on some atmospheric properties
 
@@ -14,9 +14,21 @@ wget -q http://wettermast-hamburg.zmaw.de/plots/ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q
 
 # create two overview plots
 date=$(date +%F_%H%M)
-convert ZR_{TT,RH,P,SNC_DIR,SNC_VEL,BB,Q,CTB}_48h.gif -append ${date}_wettermast_48h.png
-convert ZR_{TT,RH,P,SNC_DIR,SNC_VEL,BB,Q,CTB}_8d.gif -append ${date}_wettermast_8d.png
+
+# last 48 hours
+convert ZR_{TT,RH,P,Q}_48h.gif -append left_48h.png
+convert ZR_{CTB,SNC_DIR,SNC_VEL,BB}_48h.gif -append right_48h.png
+convert {left,right}_48h.png +append ${date}_48h.png
+
+# last 8 days
+convert ZR_{TT,RH,P,Q}_8d.gif -append left_8d.png
+convert ZR_{CTB,SNC_DIR,SNC_VEL,BB}_8d.gif -append right_8d.png
+convert {left,right}_8d.png +append ${date}_8d.png
 
 # remove the single files
 rm ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q,CTB}{_48h,_8d}.gif
+rm {left,right}{_48h,_8d}.png
+
+# remove files older than 30 days
+find $PICDIR -name "*.png" -ctime +30 -exec rm {} +
 
