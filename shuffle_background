@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 17.03.2015
+# version: 07.10.2015
 #
 # purpose: set random picture as background image
 
@@ -8,20 +8,13 @@
 [[ -z $DISPLAY ]] && exit 1
 
 # set directory conatining the pictures
-# dark and light mode for different picture  brightness
-[[ -z $1 ]] || [[ $1 == "--light" || $1 == "--dark" ]] || exit 1
-if [[ $1 == "--light" ]];then
-    DIR="/home/lukas/.wallpaper/light/"
-elif [[ $1 == "--dark" ]];then
-    DIR="/home/lukas/.wallpaper/dark/"
-else
-    DIR="/home/lukas/.wallpaper/"
-fi
+DIR="/usr/share/backgrounds"
 
 # get random picture
 PIC=$(find $DIR -type f | shuf -n 1)
 
-# set dbus session. this enables cron to change the background
+# set dbus session. this enables cron to change the background:
+# * * * * DISPLAY=:0 /path/to/shuffle_background
 PID=$(pgrep gnome-session)
 export DBUS_SESSION_BUS_ADDRESS=$(grep -z DBUS_SESSION_BUS_ADDRESS /proc/$PID/environ|cut -d= -f2-)
 
