@@ -1,20 +1,22 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 03.09.2015
+# version: 22.10.2015
 #
-# purpose: create an overview on some atmospheric properties
+# purpose: create an overview of some atmospheric properties
+#  measured at the Wettermast (http://wettermast-hamburg.zmaw.de/)
 
 # if not present, create cirectory to store data
 PICDIR="$HOME/Wettermast"
 [[ -d $PICDIR ]] || mkdir $PICDIR
 cd $PICDIR
 
-# get the 48h and 8d time series form Wettermast Hamburg
+# get the 48h and 8d time series from Wettermast Hamburg
 wget -q http://wettermast-hamburg.zmaw.de/plots/ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q,CTB}{_48h,_8d}.gif
 
-# create two overview plots
+# get current date for filenames
 date=$(date +%F_%H%M)
 
+## create two overview plots
 # last 48 hours
 convert ZR_{TT,RH,P,Q}_48h.gif -append left_48h.png
 convert ZR_{CTB,SNC_DIR,SNC_VEL,BB}_48h.gif -append right_48h.png
@@ -28,6 +30,10 @@ convert {left,right}_8d.png +append ${date}_8d.png
 # remove the single files
 rm ZR_{TT,SNC_VEL,BB,SNC_DIR,P,RH,Q,CTB}{_48h,_8d}.gif
 rm {left,right}{_48h,_8d}.png
+
+# symlink latest overview
+ln -fs ${date}_48h.png latest_48h.png
+ln -fs ${date}_8d.png latest_8d.png
 
 # remove files older than 30 days
 find $PICDIR -name "*.png" -ctime +30 -exec rm {} +
