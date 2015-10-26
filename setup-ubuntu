@@ -1,5 +1,5 @@
 # author: Lukas Kluft
-# version: 26.06.2015
+# version: 25.10.2015
 #
 # purpose: install packages on a fresh Ubuntu install
 
@@ -32,6 +32,8 @@ sudo apt-get install -y \
     spotify-client              `# Spotify music streaming` \
     python-pip                  `# python package installer` \
     gfortran openmpi-bin        `# GNU Fortran compiler with MPI` \
+    gdb                         `# GNU Debugger` \
+    make                        `# Makefiles for convenient compilin` \
     chromium-browser            `# web browser` \
     pepperflashplugin-nonfree   `# Flash player for browsers` \
     texlive texlive-lang-german texlive-doc-de \
