@@ -1,23 +1,16 @@
 # author: Lukas Kluft
-# version: 05.09.2014
+# version: 29.10.2015
 #
 # purpose: pull all git repositories
 
-blue='\e[0;34m'
+blue='\e[1;34m'
 white='\e[0m'
-
-if [[ $(hostname) == "apple"* ]];then
-    echo=gecho
-else
-    echo=echo
-fi
-
 
 for gitdir in $HOME/git/*
     do
     if [[ "$gitdir" != *".git" ]];then
         cd $gitdir
-        $echo -e Aktuelles Verzeichnis: $blue$(pwd)$white
+        echo -e Aktuelles Verzeichnis: $blue$(pwd)$white
         git pull
     fi
     done
