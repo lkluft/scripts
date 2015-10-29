@@ -7,8 +7,6 @@
 blue='\033[1;34m'
 white='\033[0m'
 
-which echo
-
 for gitdir in $HOME/git/*
     do
     if [[ "$gitdir" != *".git" ]];then
