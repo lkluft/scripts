@@ -1,10 +1,13 @@
+#!/bin/bash
 # author: Lukas Kluft
 # version: 29.10.2015
 #
 # purpose: pull all git repositories
 
-blue='\e[1;34m'
-white='\e[0m'
+blue='\033[1;34m'
+white='\033[0m'
+
+which echo
 
 for gitdir in $HOME/git/*
     do
