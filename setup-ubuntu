@@ -1,5 +1,5 @@
 # author: Lukas Kluft
-# version: 25.10.2015
+# version: 09.11.2015
 #
 # purpose: install packages on a fresh Ubuntu install
 
@@ -19,29 +19,29 @@ echo 'deb http://linux.dropbox.com/ubuntu trusty main' \
 # install packages
 sudo apt-get update
 sudo apt-get install -y \
-    vim-gnome                   `# text editor` \
-    okular                      `# PDF viewer` \
-    git                         `# version control system` \
-    tmux                        `# terminal multiplexer` \
-    sshfs                       `# mount filesystems via SSH` \
-    openssh-server              `# SSH server` \
-    dropbox                     `# Dropbox file sharing` \
-    keepassx                    `# password manager` \
-    dict dict-de-en dictd       `# dictionary` \
-    curl                        `# transfer data from server` \
-    spotify-client              `# Spotify music streaming` \
-    python-pip                  `# python package installer` \
-    gfortran openmpi-bin        `# GNU Fortran compiler with MPI` \
-    gdb                         `# GNU Debugger` \
-    make                        `# Makefiles for convenient compilin` \
+    cdo grads                   `# data operator/visulisation`
     chromium-browser            `# web browser` \
-    pepperflashplugin-nonfree   `# Flash player for browsers` \
-    texlive texlive-lang-german texlive-doc-de \
-    texlive-latex-extra         `# LaTeX` \
+    curl                        `# transfer data from server` \
+    dict dict-de-en dictd       `# dictionary` \
+    dropbox                     `# Dropbox file sharing` \
+    gdb                         `# GNU Debugger` \
+    gfortran openmpi-bin        `# GNU Fortran compiler with MPI` \
+    git                         `# version control system` \
+    keepassx                    `# password manager` \
     latex-beamer                `# LaTeX presentations` \
     latexmk                     `# LaTeX compiler` \
+    make                        `# Makefiles for convenient compilin` \
+    msmtp msmtp-mta             `# sending mails from CLI` \
+    okular zathura              `# PDF viewer` \
+    openssh-server              `# SSH server` \
+    pepperflashplugin-nonfree   `# Flash player for browsers` \
+    spotify-client              `# Spotify music streaming` \
+    sshfs                       `# mount filesystems via SSH` \
+    texlive texlive-lang-german texlive-doc-de \
+    texlive-latex-extra         `# LaTeX` \
     texmaker                    `# LaTeX editor` \
-    cdo grads                   `# data operator/visulisation`
+    tmux                        `# terminal multiplexer` \
+    vim-gnome                   `# text editor` \
 
 # install Flash-player-plugin
 sudo update-pepperflashplugin-nonfree --install --quiet
