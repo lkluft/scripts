@@ -235,7 +235,7 @@ function sp-lyrics {
     title=$(sp-metadata | grep title | cut -d "|" -f 2 | sed -e 's/ /+/g' -e 's/\[.*\]//')
 
     # write lyrics from makeitpersonal.co to temporary file
-    lyrics=$(mktemp)
+    lyrics=$(mktemp -t sp-lyrics.XXXXX)
     curl -s "http://makeitpersonal.co/lyrics?artist=$artist&title=$title" > $lyrics
 
     if grep -q "Sorry, We don't have lyrics for this song yet." "$lyrics";then
@@ -259,6 +259,7 @@ function sp-lyrics {
     header=$(echo "#### $artist - $title ####" | sed -r 's/[+]+/ /g')
     sed -i "1i$header" $lyrics
     less -s $lyrics
+    rm $lyrics
 }
 
 function sp-version {
