@@ -22,8 +22,9 @@ temphosts2=`mktemp`
 
 # Obtain various hosts files and merge into one
 log echo "Downloading ad-blocking hosts files..."
-wget -qnv -O - http://winhelp2002.mvps.org/hosts.txt >> $temphosts1
-wget -qnv -O - http://someonewhocares.org/hosts/hosts >> $temphosts1
+wget -qnv -O - "http://winhelp2002.mvps.org/hosts.txt" >> $temphosts1
+wget -qnv -O - "http://hosts-file.net/ad_servers.asp" >> $temphosts1
+wget -qnv -O - "http://someonewhocares.org/hosts/hosts" >> $temphosts1
 wget -qnv -O - "http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext" >> $temphosts1
 
 # Do some work on the file:
