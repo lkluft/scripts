@@ -1,63 +1,33 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 17.09.2014
+# version: 08.01.2016
 #
-# purpose: check if an ARTS update is available. if so, download
-#           the sourcefiles and build the ARTS executable.
-#           also update the ARTS syntax highlighting for vim and
-#           the arts-xml-data directory. show last ChangeLog entry
+# purpose: 1) update and build ARTS binary
+#          2) create ctags file
+#          3) update arts-xml-data
+#        [ 4) run update-vim-arts-syntax ]
 
-# download the latest sourcefiles using subversion
-cd /home/zmaw/u300509/lkluft/arts/
-echo Aktuelles Verzeichnis ist $(pwd)
+# user settings
+ARTS_DIR='/scratch/uni/u237/users/lkluft/arts'
+ARTS_XML='/scratch/uni/u237/users/lkluft/arts-xml-data'
+NCORES=8
 
-if [[ $(svn info | grep Revision) == $(svn info -r HEAD | grep Revision) ]];then
-    echo ARTS ist auf dem aktuellen Stand.
+# change to ARTS directory
+cd "${ARTS_DIR}"
+
+# check if revision number has changed
+if [[ "$(svn info -r HEAD | grep ^Rev)" == "$(svn info | grep ^Rev)" ]];then
+    echo 'Up to date.'
 else
-    echo Download der aktuellsten sourcefiles.
-    svn update
+    # update and build ARTS
+    svn update && cd build && make -j"${NCORES}" arts
 
-    # get number of cores that are free to use (use halt of them)
-    n=$(($(($(nproc)-$(cat /proc/loadavg | cut -d "." -f 1)))/2))
-
-    if [ $n -le 6 ];then
-        n=6
-    fi
-
-    # build the executable
-    cd build
-    echo Aktuelles Verzeichnis ist $(pwd)
-    echo Kompilieren der executable mit $n CPU-Cores.
-    make -j$n arts
-
-    # success message
-    if [ $? = 0 ];then
-        echo ARTS Update erfolgreich durchgeführt.
-    else
-        echo Fehler beim ARTS Update.
-    fi
-
-    # update vim syntax highlightin for arts (if script is existing)
-    if [ $(which update-vim-arts-syntax) ];then
-        echo -e "\nvim Syntax Highlighting wird aktualisiert."
-        update-vim-arts-syntax
-
-        # succes message
-        if [ $? = 0 ];then
-            echo vim syntax file erfolgreich aktualisiert.
-        else
-            echo Fehler bei Aktualisierung des vim syntax files.
-        fi
-    fi
+    # create (c)tags file for vim
+    cd "${ARTS_DIR}" && ctags -R
 
     # update arts-xml-data
-    cd /home/zmaw/u300509/lkluft/arts-xml-data/
-    echo -e "\nAktuelles Verzeichnis ist $(pwd)"
-    echo Download der aktuellsten arts-xml-data.
-    svn update
+    cd "${ARTS_XML}" && svn update
 
-    # print ChangeLog
-    CL="/home/zmaw/u300509/lkluft/arts/ChangeLog"
-    echo
-    head -n $(( $(grep -n ^2 $CL | head -n 2 | tail -n 1 | cut -d ":" -f 1) -1)) $CL
+    # if in PATH, run update-vim-arts-syntax
+    hash update-vim-arts-syntax &> /dev/null && update-vim-arts-syntax
 fi
