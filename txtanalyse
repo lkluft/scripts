@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+"""Analyse the number of occurences of words in a txt-file.
+"""
+
+import operator
+import sys
+
+
+def rm_spec_chars(string):
+    """Remove special charactes from a string."""
+    special_chars = ['"', "'", ',', '.', ':', '#',
+                     ';', '?', '=', '-', '(', '*',
+                     ')', '[', ']', '{', '}'
+                      ]
+    for char in special_chars: string = string.replace(char, '')
+    return string
+
+
+def word_counter(filename=None):
+    """Count the number of occurences of words in a file."""
+    d = {}
+    with open(filename) as f:
+        for line in f:
+            for word in rm_spec_chars(line).lower().split():
+                if word in d:
+                    d[word] += 1
+                else:
+                    d[word] = 1
+    return d
+
+
+def sort_dict(d, reverse=False):
+    """Sort dictionary entries by their values."""
+    d_sorted = sorted(d.items(), key=operator.itemgetter(1))
+
+    if reverse:
+        d_sorted.reverse()
+
+    return d_sorted
+
+
+def main(filename=None, N=10):
+    """Pass statistics of word occurences to stdout.
+
+    This function analyses a given file.  It counts the number of occurences of
+    different words and sends a top list to stdout.
+    """
+    word_dict = word_counter(filename)
+
+    word_rank = sort_dict(word_dict, reverse=True)
+
+    N = min(N, len(word_rank))
+    print('Top {} words in "{}":'.format(N, filename))
+    for n in range(N):
+        print('{}.\t{}\t{}'.format(n+1, word_rank[n][0], word_rank[n][1]))
+
+
+if __name__ == '__main__':
+    filename = sys.argv[1]
+
+    if len(sys.argv) == 3:
+        N = int(sys.argv[2])
+        main(filename, N)
+    else:
+        main(filename)
