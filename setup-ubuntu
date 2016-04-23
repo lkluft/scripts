@@ -28,6 +28,7 @@ sudo apt-get install -y \
     curl                        `# transfer data from server` \
     dict dict-de-en dictd       `# dictionary` \
     dropbox                     `# Dropbox file sharing` \
+    exuberant-ctags             `# tool to create tags file` \
     gdb                         `# GNU Debugger` \
     gfortran openmpi-bin        `# GNU Fortran compiler with MPI` \
     git                         `# version control system` \

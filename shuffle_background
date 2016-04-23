@@ -8,7 +8,7 @@
 [[ -z $DISPLAY ]] && exit 1
 
 # set directory conatining the pictures
-DIR="/usr/share/backgrounds"
+DIR="${HOME}/Dropbox/Dokumente/simpledesktop"
 
 # get random picture
 PIC=$(find $DIR -type f | shuf -n 1)

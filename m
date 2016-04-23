@@ -1,3 +1,3 @@
 #!/bin/bash
-if [ ! -z $@ ]; then amixer -D pulse set Master "$@"% unmute > /dev/null; fi
-if [ -z $@ ]; then amixer -D pulse set Master toggle > /dev/null; fi
+[[ -z $@ ]] && amixer -qD pulse set Master toggle \
+            || amixer -qD pulse set Master "$@"% unmute
