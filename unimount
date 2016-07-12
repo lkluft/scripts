@@ -16,5 +16,5 @@ else
     # create folder and mount remote directory
     mkdir -p $HOME/{t7home,l2home}
     sshfs -o follow_symlinks lehre: $HOME/l2home
-    sshfs -o follow_symlinks thun: $HOME/t7home
+    sshfs -o follow_symlinks t7: $HOME/t7home
 fi

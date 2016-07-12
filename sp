@@ -262,6 +262,17 @@ function sp-lyrics {
     rm $lyrics
 }
 
+function sp-youtube() {
+  # Search current track on youtube
+  _yt() {
+    local q="$(echo $@ | sed -e 's/+/%2B/g' -e 's/ /+/g')";
+    ${BROWSER} "https://www.youtube.com/results?search_query=${q}" &> /dev/null &
+  }
+
+  eval "$(sp-eval)"
+  _yt ${SPOTIFY_ARTIST} ${SPOTIFY_TITLE}
+}
+
 function sp-version {
   # Prints version information.
 
