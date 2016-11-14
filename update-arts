@@ -10,7 +10,7 @@
 # user settings
 ARTS_DIR='/scratch/uni/u237/users/lkluft/arts'
 ARTS_XML='/scratch/uni/u237/users/lkluft/arts-xml-data'
-NCORES=8
+[[ -z $OMP_NUM_THREADS ]] && export OMP_NUM_THREADS=8
 
 # change to ARTS directory
 cd "${ARTS_DIR}"
@@ -20,7 +20,7 @@ if [[ "$(svn info -r HEAD | grep ^Rev)" == "$(svn info | grep ^Rev)" ]];then
     echo 'Up to date.'
 else
     # update and build ARTS
-    svn update && cd build && make -j"${NCORES}" arts
+    svn update && cd build && make -j arts
 
     # create (c)tags file for vim
     cd "${ARTS_DIR}" && ctags -R
