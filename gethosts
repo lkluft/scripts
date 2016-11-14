@@ -76,4 +76,6 @@ log "You can always restore your original hosts file with this command:"
 log "cp /etc/hosts-system /etc/hosts"
 log "so don't delete that file! (It's saved read-only for your protection.)"
 
+rm "${tmphosts}"
+
 exit 0
