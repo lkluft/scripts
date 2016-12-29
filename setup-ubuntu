@@ -42,7 +42,7 @@ sudo apt-get install -y \
     pepperflashplugin-nonfree   `# Flash player for browsers` \
     spotify-client              `# Spotify music streaming` \
     sshfs                       `# mount filesystems via SSH` \
-    texlive texlive-lang-german texlive-doc-de \
+    texlive texlive-lang-german \
     texlive-latex-extra         `# LaTeX` \
     texmaker                    `# LaTeX editor` \
     tmux                        `# terminal multiplexer` \
