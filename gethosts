@@ -1,6 +1,6 @@
 #!/bin/bash
 # author: Lukas Kluft
-# version: 30.01.2016
+# version: 27.03.2017
 #
 # note: This script is a "cleaner" version of a script published on
 # https://www.kubuntuforums.net/showthread.php?56419-Script-to-automate-building-an-adblocking-hosts-file
@@ -24,8 +24,14 @@ if [[ ! -f /etc/hosts-system ]]; then
  chmod 444 /etc/hosts-system
 fi
 
-# Perform work in temporary files
+# Create temporary file (download target, sorting, ...)
 tmphosts="$(mktemp --tmpdir gethosts.XXXXXXXX)"
+function cleanup {
+  # Configure a trap to ensure temoporary files are removed even when the
+  # scripts fails.
+  rm "${tmphosts}"
+}
+trap cleanup EXIT
 
 # Obtain various hosts files and merge into one
 log "Downloading ad-blocking hosts files..."
@@ -33,7 +39,7 @@ wget -qnv -O "${tmphosts}" \
 'http://adaway.org/hosts.txt' \
 'http://hosts-file.net/ad_servers.asp' \
 'http://hosts-file.net/download/hosts.txt' \
-'http://hosts-file.net/hphosts-partial.txt'\
+'http://hosts-file.net/hphosts-partial.txt' \
 'http://pgl.yoyo.org/as/serverlist.php?hostformat=hosts&showintro=1&mimetype=plaintext' \
 'http://someonewhocares.org/hosts/hosts' \
 'http://winhelp2002.mvps.org/hosts.txt' \
@@ -75,7 +81,5 @@ log "Cleaning up..." && rm "${tmphosts}" && log "Done."
 log "You can always restore your original hosts file with this command:"
 log "cp /etc/hosts-system /etc/hosts"
 log "so don't delete that file! (It's saved read-only for your protection.)"
-
-rm "${tmphosts}"
 
 exit 0
