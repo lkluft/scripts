@@ -8,12 +8,12 @@
 #        [ 4) run update-vim-arts-syntax ]
 
 # user settings
-ARTS_DIR='/scratch/uni/u237/users/lkluft/arts'
-ARTS_XML='/scratch/uni/u237/users/lkluft/arts-xml-data'
+ARTS_DIR='/Users/u300509/Documents/arts'
+ARTS_XML='/Users/u300509/Documents/arts-xml-data'
 [[ -z $OMP_NUM_THREADS ]] && export OMP_NUM_THREADS=8
 
 # change to ARTS directory
-cd "${ARTS_DIR}"
+cd "${ARTS_DIR}" || exit
 
 # check if revision number has changed
 if [[ "$(svn info -r HEAD | grep ^Rev)" == "$(svn info | grep ^Rev)" ]];then
