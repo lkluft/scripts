@@ -9,8 +9,6 @@ import os
 from sys import platform
 
 
-logger = logging.getLogger()
-
 home = os.getenv('HOME')
 gitrepo = os.path.join(home, 'git')
 
@@ -56,7 +54,7 @@ if platform == "linux" or platform == "linux2":  # linux
 elif platform == "darwin":  # OS X
     mailrc = 'mailrc'
 
-src = os.path.join(gitrepo, mailrc)
+src = os.path.join(gitrepo, 'config_files', mailrc)
 dst = os.path.join(home, '.' + mailrc)
 os.symlink(src, dst)
 
