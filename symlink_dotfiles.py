@@ -44,7 +44,7 @@ sshdir = os.path.join(home, '.ssh')
 if not os.path.isdir(sshdir):
     # Ensure that the .ssh directory is present.
     os.mkdir(sshdir)
-src = os.path.join(gitrepo, 'ssh_config')
+src = os.path.join(gitrepo, 'config_files', 'ssh_config')
 dst = os.path.join(sshdir, 'config')
 os.symlink(src, dst)
 
