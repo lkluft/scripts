@@ -1,0 +1,16 @@
+#!/bin/bash
+
+if [[ $1 = -u ]]
+then
+    umount u300509
+    umount lkluft
+else
+    OPTIONS='auto_cache,reconnect,follow_symlinks,noappledouble'
+    sshfs -o $OPTIONS,volname=u300509 \
+        thunder7: \
+        "${HOME}/u300509"
+    sshfs -o $OPTIONS,volname=lkluft \
+        mistral-uhh:/work/um0878/users/lkluft \
+        "${HOME}/lkluft"
+fi
+
