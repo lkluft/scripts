@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Setup a tmux session called "work".
+#
+SESSION="main"
+MONGODB_PATH="/work/um0878/users/lkluft/work/rce-simulations/results/mongodb/"
+
+tmux start-server
+
+tmux new-session -d -s $SESSION -n Server
+if [[ -d "$MONGODB_PATH" ]]; then
+  tmux send-keys "mongod --auth --dbpath $MONGODB_PATH" C-m
+fi
+tmux splitw -v
+tmux send-keys "ipynb" C-m
+
+tmux new-window -t $SESSION:1 -n Activity
+tmux send-keys "top" C-m
+tmux splitw -h
+tmux send-keys "top -u $USER" C-m
+
+tmux new-window -t $SESSION:2 -n Work
+
+tmux attach-session -t $SESSION
