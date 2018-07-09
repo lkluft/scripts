@@ -10,7 +10,7 @@ else
         thunder7: \
         "${HOME}/u300509"
     sshfs -o $OPTIONS,volname=lkluft \
-        mistral-uhh:/work/um0878/users/lkluft \
+        mistral:/work/um0878/users/lkluft \
         "${HOME}/lkluft"
 fi
 
