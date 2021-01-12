@@ -15,9 +15,9 @@ tmux splitw -v
 tmux send-keys "jupyter-lab" C-m
 
 tmux new-window -t $SESSION:1 -n Activity
-tmux send-keys "top" C-m
+tmux send-keys "top -d 1" C-m
 tmux splitw -h
-tmux send-keys "top -u $USER" C-m
+tmux send-keys "top -d 1 -u $USER" C-m
 
 tmux new-window -t $SESSION:2 -n Work
 
