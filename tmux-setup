@@ -9,7 +9,7 @@ tmux start-server
 
 tmux new-session -d -s $SESSION -n Server
 if [[ -d "$MONGODB_PATH" ]]; then
-  tmux send-keys "mongod --auth --dbpath $MONGODB_PATH" C-m
+  tmux send-keys "mongod --auth --bind_ip_all --dbpath $MONGODB_PATH" C-m
 fi
 tmux splitw -v
 tmux send-keys "jupyter notebook" C-m
